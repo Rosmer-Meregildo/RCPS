@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Acceso Seguro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-enter { animation: fadeIn 0.6s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-blue-900 to-slate-900 h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-sm bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden animate-enter border border-white/20">
+        
+        <div class="pt-10 pb-6 text-center">
+            <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg mx-auto mb-4 transform rotate-3 hover:rotate-0 transition-all duration-300">
+                <i class="ph ph-shield-check"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Bienvenido</h2>
+            <p class="text-slate-500 text-sm mt-1">Sistema de Control de Rondas</p>
+        </div>
+
+        <form id="loginForm" class="px-8 pb-10 space-y-5">
+            
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                    <i class="ph ph-user text-xl"></i>
+                </div>
+                <input type="text" id="user" placeholder="Usuario" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 font-medium text-gray-700">
+            </div>
+
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                    <i class="ph ph-lock-key text-xl"></i>
+                </div>
+                <input type="password" id="pass" placeholder="Contraseña" class="w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 font-medium text-gray-700">
+                <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-blue-600 cursor-pointer focus:outline-none transition-colors">
+                    <i class="ph ph-eye text-xl" id="eyeIcon"></i>
+                </button>
+            </div>
+
+            <div id="alertBadPass" class="hidden flex items-center gap-3 bg-orange-50 border border-orange-100 text-orange-600 p-3 rounded-xl text-sm animate-pulse">
+                <i class="ph ph-warning-circle text-lg"></i>
+                <div>
+                    <span class="font-bold block">Datos incorrectos</span>
+                    <span class="text-xs">Usuario o contraseña no coinciden.</span>
+                </div>
+            </div>
+
+            <div id="alertConnection" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-sm animate-pulse">
+                <i class="ph ph-wifi-slash text-xl"></i> <div>
+                    <span class="font-bold block">Error de Conexión</span>
+                    <span class="text-xs">No pudimos conectar con Google. Verifica tu URL o internet.</span>
+                </div>
+            </div>
+
+            <button type="submit" id="btnLogin" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
+                <span>Iniciar Sesión</span>
+                <i class="ph ph-arrow-right font-bold"></i>
+            </button>
+
+            <div class="text-center mt-4">
+                <p class="text-xs text-slate-400">© 2024 Seguridad Privada v2.0</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // ⚠️⚠️ ¡ASEGURATE QUE ESTA URL SEA LA BUENA! ⚠️⚠️
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzshq04YYsKOUD7Vror6dD32StfefipVuk9DYOBuRGW4O-tAQthqU-sPaK2keSO7B8T/exec'; 
+
+        sessionStorage.clear();
+
+        function togglePassword() {
+            const input = document.getElementById('pass');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === "password") {
+                input.type = "text"; icon.classList.replace('ph-eye', 'ph-eye-slash');
+            } else {
+                input.type = "password"; icon.classList.replace('ph-eye-slash', 'ph-eye');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('btnLogin');
+            const alertPass = document.getElementById('alertBadPass');
+            const alertConn = document.getElementById('alertConnection');
+            const originalContent = btn.innerHTML;
+            
+            // UI de Carga
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Verificando...';
+            btn.disabled = true;
+            btn.classList.add('opacity-80');
+            
+            // Ocultamos ambas alertas al intentar de nuevo
+            alertPass.classList.add('hidden');
+            alertConn.classList.add('hidden');
+
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+
+            fetch(`${scriptURL}?action=login&user=${user}&pass=${pass}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === "success") {
+                    sessionStorage.setItem('logueado', 'true');
+                    sessionStorage.setItem('rol', data.role);
+                    sessionStorage.setItem('nombreUsuario', data.usuario);
+                    
+                    btn.innerHTML = '<i class="ph ph-check text-xl"></i> ¡Correcto!';
+                    btn.classList.replace('from-blue-600', 'bg-green-500');
+                    setTimeout(() => window.location.href = 'menu.html', 500);
+                } else {
+                    // ERROR: CONTRASEÑA MAL
+                    alertPass.classList.remove('hidden'); 
+                    resetBtn();
+                }
+            })
+            .catch(error => {
+                // ERROR: CONEXIÓN (URL MAL O SIN INTERNET)
+                console.error("Error real:", error); // Míralo en consola con F12
+                alertConn.classList.remove('hidden'); // MOSTRAR ALERTA ROJA NUEVA
+                resetBtn();
+            });
+
+            function resetBtn() {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-80');
+            }
+        });
+    </script>
+</body>
+</html>

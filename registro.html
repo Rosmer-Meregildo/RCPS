@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <script>if(sessionStorage.getItem('logueado') !== 'true') window.location.href = 'index.html';</script>
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative z-10">
+        <div class="bg-blue-700 p-6 text-center text-white">
+            <h2 class="text-2xl font-bold">Nuevo Registro</h2>
+        </div>
+        
+        <form id="registroForm" class="p-6 space-y-4">
+            <div><label class="block text-sm font-bold text-gray-700">Nombres *</label><input type="text" name="nombre" required class="w-full px-4 py-2 border rounded-lg"></div>
+            <div><label class="block text-sm font-bold text-gray-700">Apellidos *</label><input type="text" name="apellido" required class="w-full px-4 py-2 border rounded-lg"></div>
+            <div class="flex gap-4">
+                <div class="w-1/3"><label class="block text-sm font-bold text-gray-700">Edad</label><input type="number" name="edad" class="w-full px-4 py-2 border rounded-lg"></div>
+                <div class="w-2/3"><label class="block text-sm font-bold text-gray-700">Celular</label><input type="tel" name="celular" class="w-full px-4 py-2 border rounded-lg"></div>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700">Día de Ronda</label>
+                <select name="dia" id="diaSelect" class="w-full px-4 py-2 bg-white border rounded-lg"></select>
+            </div>
+            <button type="submit" id="btnGuardar" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg shadow mt-4">Guardar</button>
+        </form>
+        <div class="bg-gray-50 p-4 text-center border-t"><a href="menu.html" class="text-blue-600 font-bold">← Volver</a></div>
+    </div>
+
+    <div id="modalExito" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 animate-fade-in">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-xs mx-4 transform scale-100">
+            <div class="text-6xl mb-4">✅</div>
+            <h3 class="text-xl font-bold text-gray-800">¡Registrado!</h3>
+            <p class="text-gray-500 mt-2">Los datos se guardaron correctamente.</p>
+            <button onclick="cerrarModal()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold w-full hover:bg-blue-700">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzshq04YYsKOUD7Vror6dD32StfefipVuk9DYOBuRGW4O-tAQthqU-sPaK2keSO7B8T/exec'; // ⚠️ URL AQUI
+
+        const select = document.getElementById('diaSelect');
+        select.add(new Option("-- Sin fecha --", ""));
+        for(let i=1; i<=30; i++) select.add(new Option(i, i));
+
+        const form = document.getElementById('registroForm');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardar');
+            btn.innerText = "Guardando..."; btn.disabled = true;
+
+            const fd = new FormData(form);
+            const url = `${scriptURL}?action=registro&nombre=${fd.get('nombre')}&apellido=${fd.get('apellido')}&edad=${fd.get('edad')}&dia=${fd.get('dia')}&celular=${fd.get('celular')}`;
+
+            fetch(url, { method: 'POST' })
+                .then(() => {
+                    document.getElementById('modalExito').classList.remove('hidden');
+                    form.reset();
+                })
+                .catch(e => alert('Error'))
+                .finally(() => { btn.innerText = "Guardar"; btn.disabled = false; });
+        });
+
+        function cerrarModal(){ document.getElementById('modalExito').classList.add('hidden'); }
+    </script>
+</body>
+</html>
