@@ -4,67 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Animación de entrada suave */
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-enter { animation: slideIn 0.5s ease-out forwards; }
+        
+        /* Personalizar scrollbar de los selects para que se vea bien */
+        select { -webkit-appearance: none; appearance: none; }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-blue-900 via-slate-900 to-blue-900 min-h-screen flex items-center justify-center p-4">
+
     <script>if(sessionStorage.getItem('logueado') !== 'true') window.location.href = 'index.html';</script>
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden relative z-10">
-        <div class="bg-blue-700 p-6 text-center text-white">
-            <h2 class="text-2xl font-bold">Nuevo Registro</h2>
+    <div class="w-full max-w-lg bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden animate-enter border border-white/20 relative">
+        
+        <a href="menu.html" class="absolute top-4 left-4 p-2 bg-white/50 hover:bg-white rounded-full text-slate-600 hover:text-blue-600 transition shadow-sm z-10">
+            <i class="ph ph-arrow-left text-xl"></i>
+        </a>
+
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center text-white relative overflow-hidden">
+            <i class="ph ph-files absolute -right-4 -bottom-4 text-9xl text-white opacity-10 rotate-12"></i>
+            
+            <h2 class="text-3xl font-extrabold relative z-10">Nuevo Registro</h2>
+            <p class="text-blue-100 text-sm mt-1 relative z-10">Ingresa los datos del rondero</p>
         </div>
         
-        <form id="registroForm" class="p-6 space-y-4">
-            <div><label class="block text-sm font-bold text-gray-700">Nombres *</label><input type="text" name="nombre" required class="w-full px-4 py-2 border rounded-lg"></div>
-            <div><label class="block text-sm font-bold text-gray-700">Apellidos *</label><input type="text" name="apellido" required class="w-full px-4 py-2 border rounded-lg"></div>
-            <div class="flex gap-4">
-                <div class="w-1/3"><label class="block text-sm font-bold text-gray-700">Edad</label><input type="number" name="edad" class="w-full px-4 py-2 border rounded-lg"></div>
-                <div class="w-2/3"><label class="block text-sm font-bold text-gray-700">Celular</label><input type="tel" name="celular" class="w-full px-4 py-2 border rounded-lg"></div>
+        <form id="registroForm" class="p-8 space-y-5">
+            
+            <div class="space-y-4">
+                <div class="flex gap-4">
+                    <div class="w-1/2 group">
+                        <label class="block text-xs font-bold text-gray-400 mb-1 ml-1 uppercase">Nombres *</label>
+                        <div class="relative">
+                            <i class="ph ph-user absolute left-3 top-3 text-gray-400 text-lg"></i>
+                            <input type="text" name="nombre" required placeholder="Juan" class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-medium">
+                        </div>
+                    </div>
+                    <div class="w-1/2 group">
+                        <label class="block text-xs font-bold text-gray-400 mb-1 ml-1 uppercase">Apellidos *</label>
+                        <div class="relative">
+                            <i class="ph ph-user-circle absolute left-3 top-3 text-gray-400 text-lg"></i>
+                            <input type="text" name="apellido" required placeholder="Pérez" class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-medium">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="w-1/3">
+                        <label class="block text-xs font-bold text-gray-400 mb-1 ml-1 uppercase">Edad</label>
+                        <div class="relative">
+                            <i class="ph ph-cake absolute left-3 top-3 text-gray-400 text-lg"></i>
+                            <input type="number" name="edad" placeholder="--" class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium">
+                        </div>
+                    </div>
+                    <div class="w-2/3">
+                        <label class="block text-xs font-bold text-gray-400 mb-1 ml-1 uppercase">Celular</label>
+                        <div class="relative">
+                            <i class="ph ph-whatsapp-logo absolute left-3 top-3 text-green-500 text-lg"></i>
+                            <input type="tel" name="celular" placeholder="999..." class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium">
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <hr class="border-slate-100">
+
+            <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-4">
+                <p class="text-xs font-bold text-blue-500 uppercase flex items-center gap-1">
+                    <i class="ph ph-map-pin"></i> Ubicación
+                </p>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">ETAPA *</label>
+                    <div class="relative">
+                        <select name="etapa" required class="w-full pl-4 pr-10 py-2.5 bg-white border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none font-bold text-gray-700 cursor-pointer">
+                            <option value="" disabled selected>Seleccione Etapa...</option>
+                            <option value="I Etapa">I Etapa</option>
+                            <option value="II Etapa">II Etapa</option>
+                            <option value="III Etapa">III Etapa</option>
+                        </select>
+                        <i class="ph ph-caret-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">MZ (Opcional)</label>
+                        <div class="relative">
+                            <select name="mz" id="mzSelect" class="w-full pl-4 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
+                                </select>
+                            <i class="ph ph-caret-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">LOTE (Opcional)</label>
+                        <div class="relative">
+                            <select name="lt" id="ltSelect" class="w-full pl-4 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
+                                </select>
+                            <i class="ph ph-caret-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div>
-                <label class="block text-sm font-bold text-gray-700">Día de Ronda</label>
-                <select name="dia" id="diaSelect" class="w-full px-4 py-2 bg-white border rounded-lg"></select>
+                <label class="block text-xs font-bold text-gray-400 mb-1 ml-1 uppercase">Día de Ronda</label>
+                <div class="relative">
+                    <select name="dia" id="diaSelect" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
+                        </select>
+                    <i class="ph ph-calendar-blank absolute left-3 top-3 text-gray-400 text-lg"></i>
+                </div>
             </div>
-            <button type="submit" id="btnGuardar" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg shadow mt-4">Guardar</button>
+
+            <button type="submit" id="btnGuardar" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transform active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                <i class="ph ph-floppy-disk text-xl"></i>
+                <span>Guardar Registro</span>
+            </button>
         </form>
-        <div class="bg-gray-50 p-4 text-center border-t"><a href="menu.html" class="text-blue-600 font-bold">← Volver</a></div>
     </div>
 
-    <div id="modalExito" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 animate-fade-in">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-xs mx-4 transform scale-100">
-            <div class="text-6xl mb-4">✅</div>
-            <h3 class="text-xl font-bold text-gray-800">¡Registrado!</h3>
-            <p class="text-gray-500 mt-2">Los datos se guardaron correctamente.</p>
-            <button onclick="cerrarModal()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold w-full hover:bg-blue-700">Aceptar</button>
+    <div id="modalExito" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center z-50 animate-enter">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm mx-4 relative overflow-hidden">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <i class="ph ph-check-fat text-4xl text-green-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800">¡Guardado!</h3>
+            <p class="text-slate-500 mt-2 mb-6">Ha sido registrado en la base de datos correctamente.</p>
+            <button onclick="cerrarModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition">
+                Aceptar y Continuar
+            </button>
         </div>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzshq04YYsKOUD7Vror6dD32StfefipVuk9DYOBuRGW4O-tAQthqU-sPaK2keSO7B8T/exec'; // ⚠️ URL AQUI
+        // ⚠️⚠️ PEGA AQUÍ TU URL DEL SCRIPT ⚠️⚠️
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_tukM9t59LwoSpmptEUOfBuL-_RiZaSbZI9sosux2hLNS3_OhlMi6Y7pOOmRbe9rq/exec'; 
 
-        const select = document.getElementById('diaSelect');
-        select.add(new Option("-- Sin fecha --", ""));
-        for(let i=1; i<=30; i++) select.add(new Option(i, i));
+        // 1. GENERAR DÍAS (1-30)
+        const diaSelect = document.getElementById('diaSelect');
+        diaSelect.add(new Option("-- Sin fecha --", ""));
+        for(let i=1; i<=30; i++) diaSelect.add(new Option(`Día ${i}`, i));
 
+        // 2. GENERAR MANZANAS (A-Z) - LO NUEVO
+        const mzSelect = document.getElementById('mzSelect');
+        mzSelect.add(new Option("-- Sin Mz --", ""));
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        letras.forEach(letra => {
+            mzSelect.add(new Option(`Mz ${letra}`, letra));
+        });
+
+        // 3. GENERAR LOTES (1-22) - LO NUEVO
+        const ltSelect = document.getElementById('ltSelect');
+        ltSelect.add(new Option("-- Sin Lt --", ""));
+        for(let i=1; i<=22; i++) ltSelect.add(new Option(`Lote ${i}`, i));
+
+
+        // 4. LÓGICA DE ENVÍO
         const form = document.getElementById('registroForm');
+        
         form.addEventListener('submit', e => {
             e.preventDefault();
             const btn = document.getElementById('btnGuardar');
-            btn.innerText = "Guardando..."; btn.disabled = true;
+            const originalContent = btn.innerHTML;
+            
+            // Animación de carga en el botón
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-xl"></i> Guardando...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
 
             const fd = new FormData(form);
-            const url = `${scriptURL}?action=registro&nombre=${fd.get('nombre')}&apellido=${fd.get('apellido')}&edad=${fd.get('edad')}&dia=${fd.get('dia')}&celular=${fd.get('celular')}`;
+            
+            // Construimos la URL con los NUEVOS campos
+            // Asegúrate que los nombres (etapa, mz, lt) coincidan con el e.parameter del script
+            const url = `${scriptURL}?action=registro` +
+                        `&nombre=${fd.get('nombre')}` +
+                        `&apellido=${fd.get('apellido')}` +
+                        `&edad=${fd.get('edad')}` +
+                        `&celular=${fd.get('celular')}` +
+                        `&etapa=${fd.get('etapa')}` + // Nuevo
+                        `&mz=${fd.get('mz')}` +       // Nuevo
+                        `&lt=${fd.get('lt')}` +       // Nuevo
+                        `&dia=${fd.get('dia')}`;
 
             fetch(url, { method: 'POST' })
                 .then(() => {
                     document.getElementById('modalExito').classList.remove('hidden');
                     form.reset();
                 })
-                .catch(e => alert('Error'))
-                .finally(() => { btn.innerText = "Guardar"; btn.disabled = false; });
+                .catch(e => {
+                    alert('Error al guardar: ' + e);
+                })
+                .finally(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75');
+                });
         });
 
-        function cerrarModal(){ document.getElementById('modalExito').classList.add('hidden'); }
+        function cerrarModal(){ 
+            document.getElementById('modalExito').classList.add('hidden'); 
+        }
     </script>
 </body>
 </html>

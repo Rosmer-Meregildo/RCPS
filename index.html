@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acceso Seguro</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
@@ -71,7 +72,7 @@
 
     <script>
         // ⚠️⚠️ ¡ASEGURATE QUE ESTA URL SEA LA BUENA! ⚠️⚠️
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzshq04YYsKOUD7Vror6dD32StfefipVuk9DYOBuRGW4O-tAQthqU-sPaK2keSO7B8T/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_tukM9t59LwoSpmptEUOfBuL-_RiZaSbZI9sosux2hLNS3_OhlMi6Y7pOOmRbe9rq/exec'; 
 
         sessionStorage.clear();
 
@@ -111,6 +112,10 @@
                     sessionStorage.setItem('logueado', 'true');
                     sessionStorage.setItem('rol', data.role);
                     sessionStorage.setItem('nombreUsuario', data.usuario);
+                    
+                    // --- GUARDAMOS LA FOTO ---
+                    sessionStorage.setItem('fotoUsuario', data.foto || ""); 
+                    // -------------------------
                     
                     btn.innerHTML = '<i class="ph ph-check text-xl"></i> ¡Correcto!';
                     btn.classList.replace('from-blue-600', 'bg-green-500');

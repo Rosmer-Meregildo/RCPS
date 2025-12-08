@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Historial de Asistencia</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-card { animation: fadeIn 0.5s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 pb-10">
+
+    <script>if(sessionStorage.getItem('logueado') !== 'true') window.location.href = 'index.html';</script>
+
+    <div class="max-w-3xl mx-auto">
+        
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">Reporte Individual</h2>
+                <p class="text-slate-500 text-sm">Historial y estadísticas</p>
+            </div>
+            <a href="menu.html" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 transition">
+                <i class="ph ph-house text-2xl"></i>
+            </a>
+        </div>
+
+        <div class="bg-white p-2 rounded-2xl shadow-lg border border-white/50 mb-6 flex gap-2 sticky top-4 z-30">
+            <input type="text" id="searchInput" placeholder="Escribe el nombre del rondero..." class="w-full pl-6 pr-4 py-3 bg-slate-50 border-none rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="buscarHistorial()" class="bg-blue-600 text-white px-6 rounded-xl shadow-lg shadow-blue-500/30 font-bold transition active:scale-95">
+                <i class="ph ph-magnifying-glass text-xl"></i>
+            </button>
+        </div>
+
+        <div id="contenedorResultados" class="hidden space-y-6">
+            
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 animate-card">
+                <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="ph ph-chart-pie-slice text-blue-500"></i> Resumen de Desempeño
+                </h3>
+                
+                <div class="flex flex-col md:flex-row items-center justify-around gap-6">
+                    <div class="relative w-32 h-32 rounded-full flex items-center justify-center shadow-inner" 
+                         style="background: conic-gradient(#10b981 0% 0%, #ef4444 0% 100%);" id="graficoDonut">
+                        <div class="w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center shadow-lg">
+                            <span class="text-2xl font-black text-slate-800" id="txtPorcentaje">0%</span>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Asistencia</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 w-full md:w-auto">
+                        <div class="flex-1 bg-green-50 p-4 rounded-2xl border border-green-100 text-center">
+                            <p class="text-green-600 text-xs font-bold uppercase">Asistencias</p>
+                            <p class="text-3xl font-black text-green-700" id="totalAsistencias">0</p>
+                        </div>
+                        <div class="flex-1 bg-red-50 p-4 rounded-2xl border border-red-100 text-center">
+                            <p class="text-red-500 text-xs font-bold uppercase">Faltas</p>
+                            <p class="text-3xl font-black text-red-600" id="totalFaltas">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-slate-700 mb-4 ml-2">Historial Detallado</h3>
+                <div id="listaHistorial" class="space-y-3">
+                    </div>
+            </div>
+        </div>
+
+        <div id="emptyState" class="text-center py-20 opacity-50">
+            <i class="ph ph-files text-6xl text-slate-300 mb-2"></i>
+            <p class="text-slate-400 font-medium">Busca a alguien para ver su reporte.</p>
+        </div>
+
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_tukM9t59LwoSpmptEUOfBuL-_RiZaSbZI9sosux2hLNS3_OhlMi6Y7pOOmRbe9rq/exec'; // ⚠️ URL AQUI
+
+        function buscarHistorial() {
+            const nombre = document.getElementById('searchInput').value;
+            const contenedor = document.getElementById('contenedorResultados');
+            const empty = document.getElementById('emptyState');
+            const lista = document.getElementById('listaHistorial');
+            
+            if(!nombre) { alert("Escribe un nombre"); return; }
+
+            // UI Loading
+            lista.innerHTML = "<p class='text-center text-blue-500 font-bold animate-pulse'>🔍 Buscando en los archivos...</p>";
+            contenedor.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            fetch(`${scriptURL}?action=historial&nombre=${nombre}`)
+            .then(res => res.json())
+            .then(json => {
+                const datos = json.data;
+                
+                if(datos.length === 0) {
+                    lista.innerHTML = "<p class='text-center text-slate-400'>No se encontraron registros de asistencia para este nombre.</p>";
+                    return;
+                }
+
+                // 1. CÁLCULOS MATEMÁTICOS
+                let asistencias = 0;
+                let faltas = 0;
+                
+                // Ordenar por fecha (Más reciente primero) - Truco: Convertir fecha string a objeto para ordenar
+                // Asumimos formato dd/mm/yyyy. Si es simple string, lo mostramos tal cual viene del excel.
+                
+                let htmlList = "";
+
+                datos.reverse().forEach(row => {
+                    const esAsistencia = row.estado === "ASISTIO";
+                    if(esAsistencia) asistencias++; else faltas++;
+
+                    const icono = esAsistencia 
+                        ? '<div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="ph ph-check text-xl font-bold"></i></div>'
+                        : '<div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center"><i class="ph ph-x text-xl font-bold"></i></div>';
+                    
+                    const borde = esAsistencia ? 'border-green-100' : 'border-red-100';
+
+                    htmlList += `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border ${borde} flex items-center gap-4 animate-card">
+                        ${icono}
+                        <div>
+                            <p class="font-bold text-slate-700">${row.fecha}</p>
+                            <p class="text-xs text-slate-400 capitalize">${row.mes} ${row.anio}</p>
+                        </div>
+                        <div class="ml-auto">
+                            <span class="text-xs font-bold px-3 py-1 rounded-full ${esAsistencia ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}">
+                                ${row.estado}
+                            </span>
+                        </div>
+                    </div>`;
+                });
+
+                // 2. ACTUALIZAR UI
+                document.getElementById('totalAsistencias').innerText = asistencias;
+                document.getElementById('totalFaltas').innerText = faltas;
+                lista.innerHTML = htmlList;
+
+                // 3. ACTUALIZAR GRÁFICO (DONUT)
+                const total = asistencias + faltas;
+                const porcentaje = Math.round((asistencias / total) * 100) || 0;
+                
+                document.getElementById('txtPorcentaje').innerText = `${porcentaje}%`;
+                
+                // Magia del degradado cónico para el gráfico
+                const grados = (porcentaje * 360) / 100;
+                document.getElementById('graficoDonut').style.background = 
+                    `conic-gradient(#10b981 0deg ${grados}deg, #ef4444 ${grados}deg 360deg)`;
+
+            })
+            .catch(e => {
+                alert("Error de conexión");
+                lista.innerHTML = "";
+            });
+        }
+    </script>
+</body>
+</html>

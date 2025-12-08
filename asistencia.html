@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Asistencia Pro</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Animación de entrada */
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .item-animado { opacity: 0; animation: slideInRight 0.3s ease-out forwards; }
+
+        /* --- ESTILO DEL SWITCH SIMPLE (VERDE/ROJO) --- */
+        /* El contenedor del switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        /* El input checkbox oculto */
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        /* El deslizador (fondo) */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ef4444; /* ROJO POR DEFECTO (NO ASISTIÓ) */
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        /* La bolita blanca */
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        /* Cuando está activado (CHECKED) */
+        input:checked + .slider {
+            background-color: #10b981; /* VERDE (ASISTIÓ) */
+        }
+        input:checked + .slider:before {
+            -webkit-transform: translateX(24px);
+            -ms-transform: translateX(24px);
+            transform: translateX(24px);
+        }
+
+        /* Ocultar scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animación Modal */
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen pb-32 font-sans">
+
+    <script>if(sessionStorage.getItem('logueado') !== 'true') window.location.href = 'index.html';</script>
+
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="relative z-10 max-w-2xl mx-auto">
+        
+        <div class="pt-6 px-6 mb-2 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Asistencia</h1>
+                <p class="text-slate-500 font-medium text-sm">Registro diario</p>
+            </div>
+            <a href="menu.html" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 transition transform hover:scale-110">
+                <i class="ph ph-house-line text-2xl"></i>
+            </a>
+        </div>
+
+        <div class="sticky top-4 z-40 px-4">
+            <div class="bg-white/90 backdrop-blur-xl p-4 rounded-3xl shadow-xl border border-white/50 flex flex-col gap-3">
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <i class="ph ph-calendar-blank absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none"></i>
+                        <input type="date" id="fechaAsistencia" class="w-full pl-10 pr-3 py-3 bg-slate-50 border-none rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    
+                    <div class="relative w-1/3">
+                        <select id="diaSelect" class="w-full h-full pl-3 pr-8 py-3 bg-indigo-50 border-none rounded-xl font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer">
+                            <option value="">Día...</option>
+                        </select>
+                        <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-indigo-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <button onclick="cargarGrupo()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <i class="ph ph-magnifying-glass text-xl"></i>
+                    <span>Cargar Lista</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="listaAsistencia" class="px-4 mt-6 space-y-3 pb-10">
+            <div class="text-center py-16 opacity-60">
+                <div class="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ph ph-users-three text-4xl text-slate-400"></i>
+                </div>
+                <p class="text-slate-500 font-medium">Selecciona una fecha y un grupo.</p>
+                <p id="loadingTxt" class="text-blue-500 font-bold text-sm mt-4 hidden animate-pulse">📥 Descargando datos...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="panelGuardar" class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent hidden z-50">
+        <div class="max-w-2xl mx-auto">
+            <button onclick="guardarAsistencia()" id="btnGuardar" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-500/30 transform active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg border-2 border-white/20">
+                <i class="ph ph-floppy-disk text-2xl"></i>
+                <span>Guardar Asistencia</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="modalExito" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full relative overflow-hidden animate-pop">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-check-fat text-4xl text-green-500"></i>
+            </div>
+            <h3 class="text-2xl font-black text-slate-800">¡Guardado!</h3>
+            <p class="text-slate-500 mt-2 mb-8 font-medium">Asistencia registrada correctamente.</p>
+            <button onclick="location.reload()" class="w-full bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl hover:bg-slate-200 transition">Continuar</button>
+        </div>
+    </div>
+
+    <div id="modalAlerta" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl text-center max-w-xs w-full animate-pop border border-white/20">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-warning-circle text-3xl text-orange-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Atención</h3>
+            <p id="textoAlerta" class="text-slate-500 text-sm mb-6">Mensaje de alerta aquí.</p>
+            <button onclick="cerrarAlerta()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ PEGA AQUÍ TU URL CORRECTA ⚠️
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_tukM9t59LwoSpmptEUOfBuL-_RiZaSbZI9sosux2hLNS3_OhlMi6Y7pOOmRbe9rq/exec'; 
+
+        // --- Funciones de Alerta ---
+        function mostrarAlerta(mensaje) {
+            document.getElementById('textoAlerta').innerText = mensaje;
+            document.getElementById('modalAlerta').classList.remove('hidden');
+        }
+        function cerrarAlerta() {
+            document.getElementById('modalAlerta').classList.add('hidden');
+        }
+
+        // --- Configuración Inicial ---
+        const diaSelect = document.getElementById('diaSelect');
+        for(let i=1; i<=30; i++) diaSelect.add(new Option(`Día ${i}`, i));
+        document.getElementById('fechaAsistencia').valueAsDate = new Date();
+
+        let todosLosDatos = [];
+        let grupoActual = [];
+
+        // --- Descargar Datos ---
+        async function descargarBD() {
+            try {
+                document.getElementById('loadingTxt').classList.remove('hidden');
+                const res = await fetch(`${scriptURL}?action=busqueda`);
+                const json = await res.json();
+                todosLosDatos = json.data;
+                document.getElementById('loadingTxt').innerText = "✅ Base de datos lista.";
+                document.getElementById('loadingTxt').className = "text-green-600 font-bold text-sm mt-4";
+            } catch (e) {
+                mostrarAlerta("Error de conexión al cargar datos.");
+            }
+        }
+        descargarBD();
+
+        // --- Cargar Grupo y Generar Lista ---
+        function cargarGrupo() {
+            const dia = diaSelect.value;
+            const contenedor = document.getElementById('listaAsistencia');
+            
+            if(!dia) { mostrarAlerta("⚠️ Selecciona un día primero"); return; }
+            if(todosLosDatos.length === 0) { mostrarAlerta("⏳ Cargando datos, espera un segundo..."); return; }
+
+            grupoActual = todosLosDatos.filter(u => String(u.datos[3]) === String(dia));
+            
+            contenedor.innerHTML = "";
+            document.getElementById('panelGuardar').classList.add('hidden');
+
+            if(grupoActual.length === 0) {
+                contenedor.innerHTML = `
+                    <div class='bg-orange-50 p-6 rounded-2xl border border-orange-100 text-center text-orange-600'>
+                        <i class="ph ph-warning-circle text-3xl mb-2"></i>
+                        <p class="font-bold">Sin resultados</p>
+                        <p class="text-sm opacity-80">Nadie asignado al Día ${dia}</p>
+                    </div>`;
+                return;
+            }
+
+            // Encabezado de columnas
+            contenedor.innerHTML = `
+                <div class="flex justify-between items-end px-4 mb-2 animate-pulse">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Rondero</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center w-20">Estado</p>
+                </div>`;
+
+            // Generar filas
+            grupoActual.forEach((u, index) => {
+                const [nom, ape] = u.datos;
+                const idCheck = `chk-${index}`;
+                const idLabel = `lbl-${index}`;
+                const delay = index * 0.05; 
+                
+                const fila = `
+                <div class="item-animado bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow mb-3" style="animation-delay: ${delay}s">
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400">
+                            <i class="ph ph-user text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-700 capitalize text-lg leading-tight">${nom} <br>${ape}</h4>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-1 w-24">
+                        <span id="${idLabel}" class="text-[10px] font-black tracking-wider text-emerald-500 uppercase transition-colors">ASISTIÓ</span>
+                        
+                        <label class="switch">
+                            <input type="checkbox" id="${idCheck}" checked onchange="actualizarEstado(${index})">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+                
+                contenedor.innerHTML += fila;
+            });
+
+            document.getElementById('panelGuardar').classList.remove('hidden');
+        }
+
+        // --- Función para cambiar el texto visualmente ---
+        function actualizarEstado(index) {
+            const chk = document.getElementById(`chk-${index}`);
+            const lbl = document.getElementById(`lbl-${index}`);
+            
+            if (chk.checked) {
+                lbl.innerText = "ASISTIÓ";
+                lbl.className = "text-[10px] font-black tracking-wider text-emerald-500 uppercase transition-colors";
+            } else {
+                lbl.innerText = "FALTÓ";
+                lbl.className = "text-[10px] font-black tracking-wider text-red-500 uppercase transition-colors";
+            }
+        }
+
+        // --- Guardar Asistencia ---
+        function guardarAsistencia() {
+            const btn = document.getElementById('btnGuardar');
+            const fechaInput = document.getElementById('fechaAsistencia').value;
+            const diaRonda = diaSelect.value;
+            
+            if(!fechaInput) { mostrarAlerta("⚠️ Falta la fecha"); return; }
+
+            const fechaObj = new Date(fechaInput + "T00:00:00");
+            const mesStr = fechaObj.toLocaleString('es-ES', { month: 'long' });
+            const anioStr = fechaObj.getFullYear();
+            const fechaStr = fechaObj.toLocaleDateString('es-ES');
+
+            const filasParaEnviar = grupoActual.map((u, index) => {
+                const checkbox = document.getElementById(`chk-${index}`);
+                const estado = checkbox.checked ? "ASISTIO" : "FALTO";
+                return [fechaStr, mesStr, anioStr, diaRonda, u.datos[0], u.datos[1], estado];
+            });
+
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-2xl"></i> Guardando...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('datos', JSON.stringify(filasParaEnviar));
+
+            fetch(`${scriptURL}?action=guardarAsistencia`, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === "success") {
+                    document.getElementById('modalExito').classList.remove('hidden');
+                } else {
+                    mostrarAlerta("Error en el servidor de Google");
+                    btn.innerHTML = originalContent; 
+                    btn.disabled = false;
+                }
+            })
+            .catch(e => {
+                mostrarAlerta("Error de conexión. Verifica tu internet.");
+                btn.innerHTML = originalContent; 
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
