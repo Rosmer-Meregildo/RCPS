@@ -76,7 +76,7 @@
                 <div class="absolute -right-6 -bottom-6 text-blue-50 opacity-50"><i class="ph ph-magnifying-glass text-[8rem] transform rotate-12"></i></div>
                 <div class="relative z-10 flex items-start gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors"><i class="ph ph-users-three"></i></div>
-                    <div><h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Directorio</h3><p class="text-xs text-slate-500 mt-1">Gestionar base de datos.</p></div>
+                    <div><h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Directorio</h3><p class="text-xs text-slate-500 mt-1">Gestionar base de datos de los integrantes de la RCPS.</p></div>
                 </div>
             </a>
 
@@ -85,7 +85,7 @@
                 <div class="absolute -right-6 -bottom-6 text-green-50 opacity-50"><i class="ph ph-user-plus text-[8rem] transform rotate-12"></i></div>
                 <div class="relative z-10 flex items-start gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl group-hover:bg-green-600 group-hover:text-white transition-colors"><i class="ph ph-note-pencil"></i></div>
-                    <div><h3 class="text-lg font-bold text-slate-800 group-hover:text-green-600 transition-colors">Nuevo Registro</h3><p class="text-xs text-slate-500 mt-1">Agregar rondero.</p></div>
+                    <div><h3 class="text-lg font-bold text-slate-800 group-hover:text-green-600 transition-colors">Nuevo Registro</h3><p class="text-xs text-slate-500 mt-1">Agregar Nuevos integrantes de la RCPS.</p></div>
                 </div>
             </a>
 
@@ -128,52 +128,6 @@
         </div>
     </div>
 
-    <script>
-        // DATOS DEL USUARIO
-        const nombreUser = sessionStorage.getItem('nombreUsuario') || "Usuario";
-        const rolUser = sessionStorage.getItem('rol') || "Invitado";
-        const fotoUser = sessionStorage.getItem('fotoUsuario'); // Aquí llega el link del excel
-
-        document.getElementById('nombreDisplay').innerText = nombreUser;
-        document.getElementById('rolBadge').innerText = rolUser;
-
-        // --- VALIDACIÓN DE FOTO ---
-        const container = document.getElementById('avatarContainer');
-
-        if(fotoUser && fotoUser.trim().length > 5) { 
-            // SI HAY ENLACE: Ponemos la imagen
-            // Agregamos 'onerror' para que si el link no sirve, regrese al icono
-            container.innerHTML = `
-                <img src="${fotoUser}" 
-                     alt="Perfil" 
-                     class="w-full h-full object-cover" 
-                     onerror="this.parentElement.innerHTML='<i class=\'ph ph-user\'></i>'">
-            `;
-        } else {
-            // SI NO HAY ENLACE: Dejamos el icono (por defecto ya está, pero aseguramos)
-            container.innerHTML = '<i class="ph ph-user"></i>';
-        }
-
-        // SALUDO
-        const hora = new Date().getHours();
-        const saludoLabel = document.getElementById('saludoDia');
-        if (hora < 12) saludoLabel.innerText = "Buenos días,";
-        else if (hora < 18) saludoLabel.innerText = "Buenas tardes,";
-        else saludoLabel.innerText = "Buenas noches,";
-
-        // MODAL SALIDA
-        const modal = document.getElementById('modalSalida');
-        function abrirModalSalida() { modal.classList.remove('hidden'); }
-        function cerrarModalSalida() { modal.classList.add('hidden'); }
-        function confirmarSalida() {
-            sessionStorage.clear();
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.4s';
-            setTimeout(() => { window.location.href = 'index.html'; }, 400);
-        }
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) cerrarModalSalida();
-        });
-    </script>
+    <script src="js/menu.js"></script>
 </body>
 </html>

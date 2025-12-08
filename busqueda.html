@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Usuarios</title>
-    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
+    <title>Directorio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script> 
     <style>
@@ -21,8 +20,8 @@
         
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Usuarios</h2>
-                <p class="text-slate-500 text-sm">Gestiona la base de datos de ronderos</p>
+                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Directorio</h2>
+                <p class="text-slate-500 text-sm">Gestiona la base de datos</p>
             </div>
             <a href="menu.html" class="bg-white hover:bg-blue-50 text-blue-600 p-3 rounded-xl shadow-sm border border-slate-200 transition">
                 <i class="ph ph-house text-2xl"></i>
@@ -60,11 +59,24 @@
     </div>
 
     <div id="modalDenegado" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center animate-card">
-            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-500 text-3xl"><i class="ph ph-lock-key"></i></div>
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center animate-card relative">
+            <button onclick="cerrarModal('modalDenegado')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
+            
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-500 text-3xl">
+                <i class="ph ph-lock-key"></i>
+            </div>
+            
             <h3 class="text-xl font-bold text-slate-800 mb-2">Acceso Restringido</h3>
-            <p class="text-slate-500 text-sm mb-6">Solo los administradores pueden editar o eliminar.</p>
-            <button onclick="cerrarModal('modalDenegado')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-full py-3 rounded-xl font-bold transition">Entendido</button>
+            <p class="text-slate-500 text-sm mb-6">Solo administradores pueden editar. Solicita el cambio vía WhatsApp.</p>
+            
+            <a id="btnWspAdmin" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white w-full py-3 rounded-xl font-bold transition shadow-lg shadow-green-500/30 mb-3">
+                <i class="ph ph-whatsapp-logo text-xl"></i>
+                Solicitar Cambio
+            </a>
+            
+            <button onclick="cerrarModal('modalDenegado')" class="text-slate-400 text-xs hover:text-slate-600 font-bold underline">
+                Cancelar
+            </button>
         </div>
     </div>
 
@@ -85,222 +97,42 @@
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 flex justify-between items-center text-white">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-white/20 rounded-lg"><i class="ph ph-pencil-simple text-xl"></i></div>
-                    <h3 class="font-bold text-lg">Editar Ronder@</h3>
+                    <h3 class="font-bold text-lg">Editar Rondero</h3>
                 </div>
                 <button onclick="cerrarModal('modalEditar')" class="hover:bg-white/20 p-2 rounded-lg transition"><i class="ph ph-x text-xl"></i></button>
             </div>
             
             <form id="formEditar" class="p-6 space-y-4">
                 <input type="hidden" id="editFila">
-                
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-gray-400 ml-1">NOMBRES</label><input type="text" id="editNombre" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                    <div><label class="text-xs font-bold text-gray-400 ml-1">APELLIDOS</label><input type="text" id="editApellido" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                    <div><label class="text-xs font-bold text-gray-400 ml-1">NOMBRE</label><input type="text" id="editNombre" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                    <div><label class="text-xs font-bold text-gray-400 ml-1">APELLIDO</label><input type="text" id="editApellido" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
                 </div>
-
                 <div class="grid grid-cols-3 gap-3">
                     <div><label class="text-xs font-bold text-gray-400 ml-1">EDAD</label><input type="number" id="editEdad" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
                     <div class="col-span-2"><label class="text-xs font-bold text-gray-400 ml-1">CELULAR</label><input type="tel" id="editCelular" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
                 </div>
-
                 <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-3">
                     <p class="text-xs font-bold text-blue-500 uppercase flex items-center gap-1"><i class="ph ph-map-pin"></i> Ubicación</p>
-                    
                     <div>
                         <label class="text-xs font-bold text-gray-400 ml-1">ETAPA</label>
                         <select id="editEtapa" class="w-full p-3 bg-white border border-blue-200 rounded-xl font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="">Seleccione...</option>
                             <option value="I Etapa">I Etapa</option><option value="II Etapa">II Etapa</option>
-                            <option value="III Etapa">III Etapa</option>
+                            <option value="III Etapa">III Etapa</option><option value="IV Etapa">IV Etapa</option><option value="V Etapa">V Etapa</option>
                         </select>
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="text-xs font-bold text-gray-400 ml-1">MZ</label><select id="editMz" class="w-full p-3 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
                         <div><label class="text-xs font-bold text-gray-400 ml-1">LOTE</label><select id="editLt" class="w-full p-3 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
                     </div>
                 </div>
-                
                 <div><label class="text-xs font-bold text-gray-400 ml-1">DÍA DE RONDA</label><select id="editDia" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
-
-                <button type="submit" id="btnGuardarEdit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition transform active:scale-[0.98] mt-2">
-                    Guardar Cambios
-                </button>
+                <button type="submit" id="btnGuardarEdit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition transform active:scale-[0.98] mt-2">Guardar Cambios</button>
             </form>
         </div>
     </div>
 
-    <script>
-        // ⚠️ PEGA TU URL AQUI
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_tukM9t59LwoSpmptEUOfBuL-_RiZaSbZI9sosux2hLNS3_OhlMi6Y7pOOmRbe9rq/exec'; 
-
-        // SEGURIDAD
-        const rolBruto = sessionStorage.getItem('rol'); 
-        const rolLimpio = rolBruto ? rolBruto.trim().toLowerCase() : "";
-        const ES_ADMIN = (rolLimpio === 'admin');
-
-        let todosLosDatos = [];
-        
-        // --- 1. PREPARAR SELECTS (FILTRO Y EDITOR) ---
-        const diaFilter = document.getElementById('diaFilter');
-        const editDia = document.getElementById('editDia');
-        const editMz = document.getElementById('editMz');
-        const editLt = document.getElementById('editLt');
-
-        // Llenar Días
-        editDia.add(new Option("-- Sin fecha --", ""));
-        for(let i=1; i<=30; i++){
-            diaFilter.add(new Option(`Día ${i}`, i));
-            editDia.add(new Option(`Día ${i}`, i));
-        }
-        // Llenar Mz (A-Z)
-        editMz.add(new Option("--", ""));
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => editMz.add(new Option(l, l)));
-        // Llenar Lotes (1-22)
-        editLt.add(new Option("--", ""));
-        for(let i=1; i<=22; i++) editLt.add(new Option(i, i));
-
-        // --- 2. CARGAR DATOS ---
-        async function cargarDatos() {
-            try {
-                const res = await fetch(`${scriptURL}?action=busqueda`);
-                const json = await res.json();
-                todosLosDatos = json.data;
-                document.getElementById('statusCarga').parentElement.innerHTML = ""; // Limpiar loading
-                buscarDatos(); // Mostrar todo al inicio
-            } catch (e) { 
-                document.getElementById('statusCarga').innerText = "Error cargando datos. Revisa tu conexión.";
-            }
-        }
-        cargarDatos();
-
-        // --- 3. BUSCADOR ---
-        function buscarDatos() {
-            const txt = document.getElementById('searchInput').value.toLowerCase();
-            const dia = document.getElementById('diaFilter').value;
-            const container = document.getElementById('resultados');
-            container.innerHTML = "";
-
-            if(!todosLosDatos.length) return;
-
-            const filtrados = todosLosDatos.filter(obj => {
-                const n = (obj.datos[0] + " " + obj.datos[1]).toLowerCase();
-                const d = String(obj.datos[3]);
-                return (txt === "" || n.includes(txt)) && (dia === "" || d === dia);
-            });
-
-            if(filtrados.length === 0) { container.innerHTML = "<div class='col-span-full text-center py-10 text-slate-400'>No se encontraron resultados 🔍</div>"; return; }
-
-            filtrados.forEach(obj => {
-                // DESESTRUCTURACIÓN DE DATOS (AHORA SON 8 COLUMNAS)
-                // 0:Nom, 1:Ape, 2:Edad, 3:Dia, 4:Cel, 5:Etapa, 6:Mz, 7:Lt
-                const [nom, ape, edad, dia, cel, etapa, mz, lt] = obj.datos;
-                const fila = obj.fila;
-
-                // Formateo visual
-                const diaBadge = dia ? `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">📅 Día ${dia}</span>` : "";
-                const celBadge = cel ? `<span class="text-green-600 font-bold text-xs flex items-center gap-1"><i class="ph ph-whatsapp-logo"></i> ${cel}</span>` : "";
-                
-                // Formateo Dirección
-                const etapaTxt = etapa ? etapa : "Sin Etapa";
-                const mzTxt = mz ? `Mz ${mz}` : "";
-                const ltTxt = lt ? `Lt ${lt}` : "";
-                const direccionFull = `${etapaTxt} ${mzTxt} ${ltTxt}`.trim();
-
-                const cardHTML = `
-                <div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition group relative">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-lg capitalize leading-tight">${nom} ${ape}</h3>
-                            <div class="flex flex-wrap gap-2 mt-2">
-                                ${diaBadge}
-                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold">🎂 ${edad || "?"} años</span>
-                            </div>
-                            <div class="mt-3 flex items-start gap-1.5 text-slate-500 text-sm bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                <i class="ph ph-map-pin text-blue-500 mt-0.5"></i>
-                                <span class="font-medium">${direccionFull}</span>
-                            </div>
-                            <div class="mt-2 ml-1">${celBadge}</div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2 mt-4 pt-4 border-t border-slate-50">
-                        <button onclick="intentarEditar(${fila}, '${nom}', '${ape}', '${edad}', '${dia}', '${cel}', '${etapa||""}', '${mz||""}', '${lt||""}')" 
-                            class="flex-1 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1">
-                            <i class="ph ph-pencil-simple"></i> Editar
-                        </button>
-                        <button onclick="intentarBorrar(${fila}, '${nom} ${ape}')" 
-                            class="flex-1 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1">
-                            <i class="ph ph-trash"></i> Borrar
-                        </button>
-                    </div>
-                </div>`;
-                container.innerHTML += cardHTML;
-            });
-        }
-
-        // --- 4. LÓGICA DE MODALES ---
-        function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        // BORRAR
-        let filaABorrar = null;
-        function intentarBorrar(fila, nombre) {
-            if (!ES_ADMIN) { document.getElementById('modalDenegado').classList.remove('hidden'); return; }
-            filaABorrar = fila;
-            document.getElementById('txtBorrarNombre').innerText = nombre;
-            document.getElementById('modalBorrar').classList.remove('hidden');
-        }
-        document.getElementById('btnConfirmarBorrar').addEventListener('click', () => {
-             const btn = document.getElementById('btnConfirmarBorrar');
-             btn.innerText = "Eliminando..."; btn.disabled = true;
-             fetch(`${scriptURL}?action=borrar&fila=${filaABorrar}`, { method: 'POST' }).then(() => location.reload());
-        });
-
-        // EDITAR
-        function intentarEditar(fila, nom, ape, edad, dia, cel, etapa, mz, lt) {
-            if (!ES_ADMIN) { document.getElementById('modalDenegado').classList.remove('hidden'); return; }
-            
-            // Llenar formulario
-            document.getElementById('editFila').value = fila;
-            document.getElementById('editNombre').value = nom;
-            document.getElementById('editApellido').value = ape;
-            document.getElementById('editEdad').value = (edad === "undefined") ? "" : edad;
-            document.getElementById('editCelular').value = (cel === "undefined") ? "" : cel;
-            document.getElementById('editDia').value = (dia === "undefined") ? "" : dia;
-            
-            // NUEVOS CAMPOS
-            document.getElementById('editEtapa').value = (etapa === "undefined") ? "" : etapa;
-            document.getElementById('editMz').value = (mz === "undefined") ? "" : mz;
-            document.getElementById('editLt').value = (lt === "undefined") ? "" : lt;
-
-            document.getElementById('modalEditar').classList.remove('hidden');
-        }
-
-        document.getElementById('formEditar').addEventListener('submit', e => {
-            e.preventDefault();
-            const btn = document.getElementById('btnGuardarEdit');
-            const original = btn.innerHTML;
-            btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Guardando...'; btn.disabled = true;
-
-            const fd = {
-                f: document.getElementById('editFila').value,
-                n: document.getElementById('editNombre').value,
-                a: document.getElementById('editApellido').value,
-                e: document.getElementById('editEdad').value,
-                c: document.getElementById('editCelular').value,
-                d: document.getElementById('editDia').value,
-                // NUEVOS
-                et: document.getElementById('editEtapa').value,
-                mz: document.getElementById('editMz').value,
-                lt: document.getElementById('editLt').value
-            };
-
-            const url = `${scriptURL}?action=editar&fila=${fd.f}&nombre=${fd.n}&apellido=${fd.a}&edad=${fd.e}&dia=${fd.d}&celular=${fd.c}&etapa=${fd.et}&mz=${fd.mz}&lt=${fd.lt}`;
-
-            fetch(url, { method: 'POST' })
-            .then(() => location.reload())
-            .catch(() => { btn.innerHTML = original; btn.disabled = false; alert("Error"); });
-        });
-    </script>
+    <script src="js/busqueda.js"></script>
 </body>
 </html>
