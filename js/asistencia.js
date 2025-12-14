@@ -1,5 +1,5 @@
 // ⚠️ PEGA AQUÍ TU URL CORRECTA ⚠️
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8UmbFJJx43Qr2nor5NVEIp06OivMrDRE85JmAJxfKxdZC2_gd/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxLXduf1p_8rNXSy-uvgsvy_lHR8xWD0EYD2Wv98nr8Y_42WilL_xNZEoS9-WReE48U/exec'; 
 
         // --- Funciones de Alerta ---
         function mostrarAlerta(mensaje) {

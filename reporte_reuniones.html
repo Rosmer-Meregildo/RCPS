@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporte de Reuniones</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBaobBcb6FQbSRohHTl73ItpcWl4cFykDb-g&s">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-card { animation: fadeIn 0.4s ease-out forwards; }
+
+        @media print {
+            body { background-color: white !important; color: black !important; }
+            .no-print { display: none !important; } 
+            .print-only { display: block !important; } 
+            .shadow-xl, .shadow-lg, .shadow-sm { box-shadow: none !important; }
+            .bg-white { background-color: transparent !important; }
+            .border { border-color: #000 !important; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid black; padding: 4px; text-align: left; }
+            .text-purple-600, .text-slate-500 { color: black !important; }
+            .bg-purple-50 { background-color: #f0f0f0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 pb-20 text-slate-800">
+
+    <script>
+        const rol = sessionStorage.getItem('rol');
+        // Si no está logueado O si el rol no es 'admin'
+        if(sessionStorage.getItem('logueado') !== 'true' || (rol && rol.trim().toLowerCase() !== 'admin')) {
+            // Redirigir al instante si no tiene permiso
+            window.location.href = 'menu.html';
+        }
+    </script>
+
+    <div id="capaSeguridad" class="fixed inset-0 bg-slate-100 z-[100] flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <i class="ph ph-shield-check text-6xl text-slate-300"></i>
+            <p class="text-slate-400 font-bold mt-2">Verificando permisos...</p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        
+        <div class="flex justify-between items-center mb-6 no-print">
+            <div>
+                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Actas y Reportes</h2>
+                <p class="text-slate-500 text-sm">Generar PDF de reuniones</p>
+            </div>
+            <a href="menu.html" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 text-slate-600 hover:text-purple-600 transition">
+                <i class="ph ph-house text-2xl"></i>
+            </a>
+        </div>
+
+        <div class="bg-white p-4 rounded-3xl shadow-lg border border-slate-200 mb-6 no-print sticky top-4 z-30">
+            <label class="text-xs font-bold text-slate-400 ml-2 mb-1 block">SELECCIONA UNA REUNIÓN GUARDADA</label>
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <select id="selectReunion" class="w-full pl-4 pr-10 py-3 bg-purple-50 border border-purple-100 rounded-xl font-bold text-slate-700 outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer">
+                        <option value="">Cargando reuniones...</option>
+                    </select>
+                    <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 pointer-events-none"></i>
+                </div>
+                <button onclick="cargarReporte()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 rounded-xl font-bold shadow-lg transition">
+                    Ver
+                </button>
+            </div>
+        </div>
+
+        <div id="hojaReporte" class="hidden bg-white p-8 rounded-none md:rounded-3xl shadow-xl border border-slate-200 animate-card print:border-none print:shadow-none print:p-0">
+            
+            <div class="text-center mb-8 border-b-2 border-slate-800 pb-4">
+                <h1 class="text-2xl font-black uppercase tracking-widest">Reporte de Asistencia</h1>
+                <p class="text-sm font-medium mt-1">SISTEMA DE CONTROL DE RONDAS</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                <div>
+                    <p class="text-slate-500 font-bold text-xs uppercase">Motivo / Tema</p>
+                    <p class="text-lg font-bold" id="lblTema">...</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-slate-500 font-bold text-xs uppercase">Fecha</p>
+                    <p class="text-lg font-bold" id="lblFecha">...</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mb-6 print:hidden">
+                <div class="flex-1 bg-green-50 p-3 rounded-xl border border-green-200 text-center">
+                    <p class="text-xs font-bold text-green-600 uppercase">Presentes</p>
+                    <p class="text-2xl font-black text-green-700" id="statPresentes">0</p>
+                </div>
+                <div class="flex-1 bg-red-50 p-3 rounded-xl border border-red-200 text-center">
+                    <p class="text-xs font-bold text-red-600 uppercase">Faltas</p>
+                    <p class="text-2xl font-black text-red-700" id="statFaltas">0</p>
+                </div>
+                <div class="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+                    <p class="text-xs font-bold text-slate-500 uppercase">Total</p>
+                    <p class="text-2xl font-black text-slate-700" id="statTotal">0</p>
+                </div>
+            </div>
+
+            <div class="hidden print:block mb-4 border p-2 text-sm">
+                <p><strong>Resumen:</strong> Asistentes: <span id="printPresentes"></span> | Faltas: <span id="printFaltas"></span> | Total Convocados: <span id="printTotal"></span></p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs font-black uppercase border-b-2 border-slate-800 tracking-wider">
+                            <th class="py-2 pl-2">N°</th>
+                            <th class="py-2">Nombre y Apellido</th>
+                            <th class="py-2">Grupo</th>
+                            <th class="py-2 text-right pr-2">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuerpo" class="text-sm"></tbody>
+                </table>
+            </div>
+
+            <div class="hidden print:flex mt-20 justify-between gap-10">
+                <div class="flex-1 border-t border-black pt-2 text-center text-xs"><p class="font-bold">SECRETARIO</p><p>Firma y Sello</p></div>
+                <div class="flex-1 border-t border-black pt-2 text-center text-xs"><p class="font-bold">PRESIDENTE</p><p>Firma y Sello</p></div>
+            </div>
+
+        </div>
+
+        <button onclick="window.print()" id="btnImprimir" class="hidden fixed bottom-6 right-6 bg-slate-800 text-white px-6 py-4 rounded-full shadow-2xl hover:bg-black transition transform hover:scale-105 no-print flex items-center gap-2 font-bold z-50">
+            <i class="ph ph-printer text-xl"></i> Imprimir / PDF
+        </button>
+
+    </div>
+
+    <div id="modalDenegado" class="fixed inset-0 bg-black/90 z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 text-center max-w-sm">
+            <i class="ph ph-lock-key text-5xl text-red-500 mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Acceso Restringido</h2>
+            <p class="text-slate-500 mb-6">Esta sección es solo para administradores.</p>
+            <a href="menu.html" class="block w-full bg-slate-900 text-white py-3 rounded-xl font-bold">Volver al Menú</a>
+        </div>
+    </div>
+
+    <script src="js/reporte_reuniones.js"></script>
+</body>
+</html>

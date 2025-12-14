@@ -61,22 +61,13 @@
     <div id="modalDenegado" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 text-center animate-card relative">
             <button onclick="cerrarModal('modalDenegado')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ph ph-x text-xl"></i></button>
-            
-            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-500 text-3xl">
-                <i class="ph ph-lock-key"></i>
-            </div>
-            
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-500 text-3xl"><i class="ph ph-lock-key"></i></div>
             <h3 class="text-xl font-bold text-slate-800 mb-2">Acceso Restringido</h3>
             <p class="text-slate-500 text-sm mb-6">Solo administradores pueden editar. Solicita el cambio vía WhatsApp.</p>
-            
             <a id="btnWspAdmin" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white w-full py-3 rounded-xl font-bold transition shadow-lg shadow-green-500/30 mb-3">
-                <i class="ph ph-whatsapp-logo text-xl"></i>
-                Solicitar Cambio
+                <i class="ph ph-whatsapp-logo text-xl"></i> Solicitar Cambio
             </a>
-            
-            <button onclick="cerrarModal('modalDenegado')" class="text-slate-400 text-xs hover:text-slate-600 font-bold underline">
-                Cancelar
-            </button>
+            <button onclick="cerrarModal('modalDenegado')" class="text-slate-400 text-xs hover:text-slate-600 font-bold underline">Cancelar</button>
         </div>
     </div>
 
@@ -104,35 +95,57 @@
             
             <form id="formEditar" class="p-6 space-y-4">
                 <input type="hidden" id="editFila">
+                
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-xs font-bold text-gray-400 ml-1">NOMBRE</label><input type="text" id="editNombre" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
                     <div><label class="text-xs font-bold text-gray-400 ml-1">APELLIDO</label><input type="text" id="editApellido" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
                 </div>
-                <div class="grid grid-cols-3 gap-3">
-                    <div><label class="text-xs font-bold text-gray-400 ml-1">EDAD</label><input type="number" id="editEdad" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                    <div class="col-span-2"><label class="text-xs font-bold text-gray-400 ml-1">CELULAR</label><input type="tel" id="editCelular" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 ml-1">AÑO NACIMIENTO</label>
+                        <input type="number" id="editEdad" placeholder="Ej: 1990" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none text-gray-600">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 ml-1">CELULAR</label>
+                        <input type="tel" id="editCelular" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
                 </div>
+
                 <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-3">
                     <p class="text-xs font-bold text-blue-500 uppercase flex items-center gap-1"><i class="ph ph-map-pin"></i> Ubicación</p>
+                    
                     <div>
                         <label class="text-xs font-bold text-gray-400 ml-1">ETAPA</label>
                         <select id="editEtapa" class="w-full p-3 bg-white border border-blue-200 rounded-xl font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="">Seleccione...</option>
-                            <option value="I Etapa">I Etapa</option><option value="II Etapa">II Etapa</option>
-                            <option value="III Etapa">III Etapa</option>
+                            <option value="I Etapa">I Etapa</option><option value="II Etapa">II Etapa</option><option value="III Etapa">III Etapa</option>
                         </select>
                     </div>
+                    
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="text-xs font-bold text-gray-400 ml-1">MZ</label><select id="editMz" class="w-full p-3 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
                         <div><label class="text-xs font-bold text-gray-400 ml-1">LOTE</label><select id="editLt" class="w-full p-3 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
                     </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 ml-1">¿TIENE LOTE?</label>
+                        <select id="editTieneLote" class="w-full p-3 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none text-gray-600">
+                            <option value="">(Sin especificar)</option>
+                            <option value="SI TIENE">SI TIENE</option>
+                            <option value="NO TIENE">NO TIENE</option>
+                        </select>
+                    </div>
                 </div>
+                
                 <div><label class="text-xs font-bold text-gray-400 ml-1">DÍA DE RONDA</label><select id="editDia" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
-                <button type="submit" id="btnGuardarEdit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition transform active:scale-[0.98] mt-2">Guardar Cambios</button>
+
+                <button type="submit" id="btnGuardarEdit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition transform active:scale-[0.98] mt-2">
+                    Guardar Cambios
+                </button>
             </form>
         </div>
     </div>
-
     <script src="js/busqueda.js"></script>
 </body>
 </html>

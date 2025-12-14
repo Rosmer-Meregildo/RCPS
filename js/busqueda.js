@@ -1,7 +1,5 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8UmbFJJx43Qr2nor5NVEIp06OivMrDRE85JmAJxfKxdZC2_gd/exec'; // ⚠️ URL AQUI
-        
-        // 🟢 CONFIGURA AQUÍ EL NÚMERO DEL ADMIN (Código País + Número)
-        const NUMERO_ADMIN = "51918180274"; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxLXduf1p_8rNXSy-uvgsvy_lHR8xWD0EYD2Wv98nr8Y_42WilL_xNZEoS9-WReE48U/exec'; // ⚠️ URL AQUI
+        const NUMERO_ADMIN = "51918180274"; // Pon tu número real
 
         const rolBruto = sessionStorage.getItem('rol'); 
         const rolLimpio = rolBruto ? rolBruto.trim().toLowerCase() : "";
@@ -15,10 +13,7 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
         const editLt = document.getElementById('editLt');
 
         editDia.add(new Option("-- Sin fecha --", ""));
-        for(let i=1; i<=30; i++){
-            diaFilter.add(new Option(`Día ${i}`, i));
-            editDia.add(new Option(`Día ${i}`, i));
-        }
+        for(let i=1; i<=30; i++){ diaFilter.add(new Option(`Día ${i}`, i)); editDia.add(new Option(`Día ${i}`, i)); }
         editMz.add(new Option("--", ""));
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => editMz.add(new Option(l, l)));
         editLt.add(new Option("--", ""));
@@ -52,20 +47,28 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
             if(filtrados.length === 0) { container.innerHTML = "<div class='col-span-full text-center py-10 text-slate-400'>No se encontraron resultados 🔍</div>"; return; }
 
             filtrados.forEach(obj => {
-                const [nom, ape, edad, dia, cel, etapa, mz, lt] = obj.datos;
+                // DATOS RECIBIDOS DEL SCRIPT
+                const [nom, ape, anioNac, dia, cel, etapa, mz, lt, tieneLote] = obj.datos;
                 const fila = obj.fila;
+                const edadCalculada = obj.edadReal; // EDAD CALCULADA POR EL SERVER
+                
                 const diaBadge = dia ? `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold">📅 Día ${dia}</span>` : "";
                 const celBadge = cel ? `<span class="text-green-600 font-bold text-xs flex items-center gap-1"><i class="ph ph-whatsapp-logo"></i> ${cel}</span>` : "";
-                const direccionFull = `${etapa||"Sin Etapa"} ${mz?`Mz ${mz}`:""} ${lt?`Lt ${lt}`:""}`.trim();
+                const direccionFull = `${etapa||""} ${mz?`Mz ${mz}`:""} ${lt?`Lt ${lt}`:""}`.trim() || "Sin dirección";
+                
+                let loteIcon = "";
+                if(tieneLote === "SI TIENE") loteIcon = `<span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-bold flex items-center gap-1"><i class="ph ph-house"></i> Con Lote</span>`;
+                else if(tieneLote === "NO TIENE") loteIcon = `<span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold flex items-center gap-1"><i class="ph ph-tent"></i> Sin Lote</span>`;
 
                 const cardHTML = `
                 <div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 transition group relative">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="font-bold text-slate-800 text-lg capitalize leading-tight">${nom} ${ape}</h3>
-                            <div class="flex flex-wrap gap-2 mt-2">
+                            <div class="flex flex-wrap gap-2 mt-2 items-center">
                                 ${diaBadge}
-                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold">🎂 ${edad || "?"} años</span>
+                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold">🎂 ${edadCalculada} años</span>
+                                ${loteIcon}
                             </div>
                             <div class="mt-3 flex items-start gap-1.5 text-slate-500 text-sm bg-slate-50 p-2 rounded-lg border border-slate-100">
                                 <i class="ph ph-map-pin text-blue-500 mt-0.5"></i>
@@ -74,11 +77,16 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
                             <div class="mt-2 ml-1">${celBadge}</div>
                         </div>
                     </div>
+                    
                     <div class="flex gap-2 mt-4 pt-4 border-t border-slate-50">
-                        <button onclick="intentarEditar(${fila}, '${nom}', '${ape}', '${edad}', '${dia}', '${cel}', '${etapa||""}', '${mz||""}', '${lt||""}')" 
-                            class="flex-1 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1"><i class="ph ph-pencil-simple"></i> Editar</button>
+                        <button onclick="intentarEditar(${fila}, '${nom}', '${ape}', '${anioNac}', '${dia}', '${cel}', '${etapa||""}', '${mz||""}', '${lt||""}', '${tieneLote||""}')" 
+                            class="flex-1 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1">
+                            <i class="ph ph-pencil-simple"></i> Editar
+                        </button>
                         <button onclick="intentarBorrar(${fila}, '${nom} ${ape}')" 
-                            class="flex-1 bg-red-50 text-red-500 hover:bg-red-100 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1"><i class="ph ph-trash"></i> Borrar</button>
+                            class="flex-1 bg-red-50 text-red-500 hover:bg-red-100 py-2 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1">
+                            <i class="ph ph-trash"></i> Borrar
+                        </button>
                     </div>
                 </div>`;
                 container.innerHTML += cardHTML;
@@ -87,22 +95,22 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
 
         function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        // --- FUNCIÓN PARA GENERAR LINK DE WHATSAPP ---
         function prepararWhatsApp(nombre, accion) {
-            // Mensaje: "Hola Admin, quiero editar el usuario: Juan Perez. Motivo: "
             const mensaje = `Hola Admin, quiero *${accion}* el registro de: *${nombre.toUpperCase()}*.\n\n📝 *Motivo:* `;
             const link = `https://wa.me/${NUMERO_ADMIN}?text=${encodeURIComponent(mensaje)}`;
             document.getElementById('btnWspAdmin').href = link;
         }
 
-        // BORRAR
+        // --- BORRAR ---
         let filaABorrar = null;
         function intentarBorrar(fila, nombre) {
+            // SI NO ES ADMIN -> MUESTRA MODAL DENEGADO
             if (!ES_ADMIN) { 
-                prepararWhatsApp(nombre, "ELIMINAR"); // Prepara el link
+                prepararWhatsApp(nombre, "ELIMINAR"); 
                 document.getElementById('modalDenegado').classList.remove('hidden'); 
                 return; 
             }
+            // SI ES ADMIN -> MUESTRA MODAL CONFIRMAR
             filaABorrar = fila;
             document.getElementById('txtBorrarNombre').innerText = nombre;
             document.getElementById('modalBorrar').classList.remove('hidden');
@@ -113,27 +121,34 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
              fetch(`${scriptURL}?action=borrar&fila=${filaABorrar}`, { method: 'POST' }).then(() => location.reload());
         });
 
-        // EDITAR
-        function intentarEditar(fila, nom, ape, edad, dia, cel, etapa, mz, lt) {
+        // --- EDITAR ---
+        function intentarEditar(fila, nom, ape, anio, dia, cel, etapa, mz, lt, tieneLote) {
+            // SI NO ES ADMIN -> MUESTRA MODAL DENEGADO
             if (!ES_ADMIN) { 
-                prepararWhatsApp(`${nom} ${ape}`, "EDITAR"); // Prepara el link
+                prepararWhatsApp(`${nom} ${ape}`, "EDITAR"); 
                 document.getElementById('modalDenegado').classList.remove('hidden'); 
                 return; 
             }
             
+            // LLENAR CAMPOS DEL FORMULARIO
             document.getElementById('editFila').value = fila;
             document.getElementById('editNombre').value = nom;
             document.getElementById('editApellido').value = ape;
-            document.getElementById('editEdad').value = (edad === "undefined") ? "" : edad;
+            
+            // AÑO
+            document.getElementById('editEdad').value = (anio === "undefined") ? "" : anio;
+            
             document.getElementById('editCelular').value = (cel === "undefined") ? "" : cel;
             document.getElementById('editDia').value = (dia === "undefined") ? "" : dia;
             document.getElementById('editEtapa').value = (etapa === "undefined") ? "" : etapa;
             document.getElementById('editMz').value = (mz === "undefined") ? "" : mz;
             document.getElementById('editLt').value = (lt === "undefined") ? "" : lt;
+            document.getElementById('editTieneLote').value = (tieneLote === "undefined") ? "" : tieneLote;
 
             document.getElementById('modalEditar').classList.remove('hidden');
         }
 
+        // GUARDAR CAMBIOS
         document.getElementById('formEditar').addEventListener('submit', e => {
             e.preventDefault();
             const btn = document.getElementById('btnGuardarEdit');
@@ -144,30 +159,18 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbwqgW2tb86Z0gEwIvI8Um
                 f: document.getElementById('editFila').value,
                 n: document.getElementById('editNombre').value,
                 a: document.getElementById('editApellido').value,
-                e: document.getElementById('editEdad').value,
+                e: document.getElementById('editEdad').value, // AÑO
                 c: document.getElementById('editCelular').value,
                 d: document.getElementById('editDia').value,
                 et: document.getElementById('editEtapa').value,
                 mz: document.getElementById('editMz').value,
-                lt: document.getElementById('editLt').value
+                lt: document.getElementById('editLt').value,
+                tl: document.getElementById('editTieneLote').value
             };
 
-            const url = `${scriptURL}?action=editar&fila=${fd.f}&nombre=${fd.n}&apellido=${fd.a}&edad=${fd.e}&dia=${fd.d}&celular=${fd.c}&etapa=${fd.et}&mz=${fd.mz}&lt=${fd.lt}`;
+            const url = `${scriptURL}?action=editar&fila=${fd.f}&nombre=${fd.n}&apellido=${fd.a}&edad=${fd.e}&dia=${fd.d}&celular=${fd.c}&etapa=${fd.et}&mz=${fd.mz}&lt=${fd.lt}&tieneLote=${fd.tl}`;
 
             fetch(url, { method: 'POST' })
             .then(() => location.reload())
             .catch(() => { btn.innerHTML = original; btn.disabled = false; alert("Error"); });
-        });
-         // Script para deshabilitar Ctrl+U, Ctrl+S y F12
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && (e.key === 'u' || e.key === 's')) {
-                e.preventDefault();
-            }
-            if (e.key === 'F12') {
-                e.preventDefault();
-            }
-        });
-         // Script para deshabilitar el clic derecho
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
         });
